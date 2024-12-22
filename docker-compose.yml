@@ -1,0 +1,33 @@
+version: '3.3'
+
+services:
+  flask-app:
+    image: flask-app-image
+    container_name: flask-app
+    build:
+      context: .
+    volumes:
+      - ./flask-app/logs:/app/logs  # Монтируем локальную папку для логов
+    logging:
+      driver: "json-file"  # Логирование в формате JSON
+      options:
+        max-size: "10m"  # Максимальный размер файла лога
+        max-file: "3"  # Количество файлов лога
+    environment:
+      - FLASK_APP=/app/app.py  # Пример переменной окружения для Flask
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    volumes:
+      - ./logs:/var/log/nginx
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "80:80"
+      - "443:443"
+    logging:
+      driver: "json-file"  # Логирование в формате JSON
+      options:
+        max-size: "10m"  # Максимальный размер файла лога
+        max-file: "3"  # Количество файлов лога
+
